@@ -387,11 +387,15 @@ public final class NavigationHelper {
     }
 
     public static void expandMainPlayer(final Context context) {
-        context.sendBroadcast(new Intent(VideoDetailFragment.ACTION_SHOW_MAIN_PLAYER));
+        final Intent intent = new Intent(VideoDetailFragment.ACTION_SHOW_MAIN_PLAYER);
+        intent.setPackage(context.getPackageName());
+        context.sendBroadcast(intent);
     }
 
     public static void sendPlayerStartedEvent(final Context context) {
-        context.sendBroadcast(new Intent(VideoDetailFragment.ACTION_PLAYER_STARTED));
+        final Intent intent = new Intent(VideoDetailFragment.ACTION_PLAYER_STARTED);
+        intent.setPackage(context.getPackageName());
+        context.sendBroadcast(intent);
     }
 
     public static void showMiniPlayer(final FragmentManager fragmentManager) {
