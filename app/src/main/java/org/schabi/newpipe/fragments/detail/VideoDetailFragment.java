@@ -393,7 +393,9 @@ public final class VideoDetailFragment
         super.onStop();
 
         if (!activity.isChangingConfigurations()) {
-            activity.sendBroadcast(new Intent(ACTION_VIDEO_FRAGMENT_STOPPED));
+            final Intent intent = new Intent(ACTION_VIDEO_FRAGMENT_STOPPED);
+            intent.setPackage(activity.getPackageName());
+            activity.sendBroadcast(intent);
         }
     }
 
