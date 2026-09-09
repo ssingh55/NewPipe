@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Process;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
@@ -127,6 +128,12 @@ public final class PlayerService extends MediaBrowserServiceCompat {
             Log.d(TAG, "onStartCommand() called with: intent = [" + intent
                     + "], extras = [" + BundleKt.toDebugString(intent.getExtras())
                     + "], flags = [" + flags + "], startId = [" + startId + "]");
+        }
+
+        if (!isTrustedCaller(Binder.getCallingUid())) {
+            Log.w(TAG, "Untrusted caller tried to start service: "
+                    + getPackageManager().getNameForUid(Binder.getCallingUid()));
+            return START_NOT_STICKY;
         }
 
         // All internal NewPipe intents used to interact with the player, that are sent to the
@@ -272,6 +279,12 @@ public final class PlayerService extends MediaBrowserServiceCompat {
                     + "], extras = [" + BundleKt.toDebugString(intent.getExtras()) + "]");
         }
 
+        if (!isTrustedCaller(Binder.getCallingUid())) {
+            Log.w(TAG, "Untrusted caller tried to bind to service: "
+                    + getPackageManager().getNameForUid(Binder.getCallingUid()));
+            return null;
+        }
+
         if (BIND_PLAYER_HOLDER_ACTION.equals(intent.getAction())) {
             // Note that this binder might be reused multiple times while the service is alive, even
             // after unbind() has been called: https://stackoverflow.com/a/8794930 .
@@ -298,6 +311,20 @@ public final class PlayerService extends MediaBrowserServiceCompat {
         public PlayerService getService() {
             return playerService.get();
         }
+    }
+
+    private boolean isTrustedCaller(final int callingUid) {
+        // Allow calls from the system itself (e.g., media notifications, Android Auto)
+        if (callingUid == Process.SYSTEM_UID) {
+            return true;
+        }
+
+        // Allow calls from the application's own UID
+        if (callingUid == Process.myUid()) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
