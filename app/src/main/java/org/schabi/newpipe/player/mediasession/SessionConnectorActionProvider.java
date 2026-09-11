@@ -33,7 +33,9 @@ public class SessionConnectorActionProvider implements MediaSessionConnector.Cus
                                @Nullable final Bundle extras) {
         final Context actualContext = context.get();
         if (actualContext != null) {
-            actualContext.sendBroadcast(new Intent(action));
+            final Intent intent = new Intent(action);
+            intent.setPackage(actualContext.getPackageName());
+            actualContext.sendBroadcast(intent);
         }
     }
 
