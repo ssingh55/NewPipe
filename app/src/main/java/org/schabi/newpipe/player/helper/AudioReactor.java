@@ -64,6 +64,7 @@ public class AudioReactor implements AnalyticsListener {
                 : AudioEffect.ACTION_CLOSE_AUDIO_EFFECT_CONTROL_SESSION);
         intent.putExtra(AudioEffect.EXTRA_AUDIO_SESSION, audioSessionId);
         intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.getPackageName());
+        intent.setPackage(context.getPackageName());
         context.sendBroadcast(intent);
     }
 }
